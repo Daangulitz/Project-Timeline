@@ -1,19 +1,25 @@
 fileFormatVersion: 2
-guid: 302817934bf7ed24bac160f110021f53
+guid: 67ddb9129fbbfe24c89d3dd09e033189
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -432674713727891427
-    second: PlayerMovement_0
+      213: -6270325638183552503
+    second: Cyclops Attack Animation_0
   - first:
-      213: 1543661310651966809
-    second: PlayerMovement_1
+      213: -8056707223623863309
+    second: Cyclops Attack Animation_1
   - first:
-      213: 3770782470277414165
-    second: PlayerMovement_2
+      213: 6028981508293421633
+    second: Cyclops Attack Animation_2
   - first:
-      213: -6066284856684404652
-    second: PlayerMovement_3
+      213: -1696750447061889097
+    second: Cyclops Attack Animation_3
+  - first:
+      213: -1151709046227894015
+    second: Cyclops Attack Animation_4
+  - first:
+      213: 2956370753548815504
+    second: Cyclops Attack Animation_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -84,7 +90,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -118,43 +124,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerMovement_0
+      name: Cyclops Attack Animation_0
       rect:
         serializedVersion: 2
-        x: 39
-        y: 37
-        width: 20
-        height: 32
+        x: 0
+        y: 0
+        width: 60
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,20 +143,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d1884f8e3a4def9f0800000000000000
-      internalID: -432674713727891427
+      spriteID: 90a7b0ebd045bf8a0800000000000000
+      internalID: -6270325638183552503
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerMovement_1
+      name: Cyclops Attack Animation_1
       rect:
         serializedVersion: 2
-        x: 139
-        y: 37
-        width: 21
-        height: 32
+        x: 64
+        y: 0
+        width: 60
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -185,20 +165,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 955acea88cf2c6510800000000000000
-      internalID: 1543661310651966809
+      spriteID: 3f373946773d03090800000000000000
+      internalID: -8056707223623863309
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerMovement_2
+      name: Cyclops Attack Animation_2
       rect:
         serializedVersion: 2
-        x: 239
-        y: 37
-        width: 20
-        height: 32
+        x: 128
+        y: 0
+        width: 60
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -207,20 +187,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 51db722ada2845430800000000000000
-      internalID: 3770782470277414165
+      spriteID: 14a6a372dbe3ba350800000000000000
+      internalID: 6028981508293421633
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerMovement_3
+      name: Cyclops Attack Animation_3
       rect:
         serializedVersion: 2
-        x: 339
-        y: 37
-        width: 45
-        height: 32
+        x: 192
+        y: 0
+        width: 60
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,8 +209,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 450aefa301a30dba0800000000000000
-      internalID: -6066284856684404652
+      spriteID: 7bf046a457ee378e0800000000000000
+      internalID: -1696750447061889097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyclops Attack Animation_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 60
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1018bf679be4400f0800000000000000
+      internalID: -1151709046227894015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cyclops Attack Animation_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 60
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09c81ad6983270920800000000000000
+      internalID: 2956370753548815504
       vertices: []
       indices: 
       edges: []
@@ -239,7 +263,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 051f43b7d84792b42a3a3e54fd984d20
     internalID: 0
     vertices: []
     indices: 
@@ -249,10 +273,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlayerMovement_0: -432674713727891427
-      PlayerMovement_1: 1543661310651966809
-      PlayerMovement_2: 3770782470277414165
-      PlayerMovement_3: -6066284856684404652
+      Cyclops Attack Animation_0: -6270325638183552503
+      Cyclops Attack Animation_1: -8056707223623863309
+      Cyclops Attack Animation_2: 6028981508293421633
+      Cyclops Attack Animation_3: -1696750447061889097
+      Cyclops Attack Animation_4: -1151709046227894015
+      Cyclops Attack Animation_5: 2956370753548815504
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
