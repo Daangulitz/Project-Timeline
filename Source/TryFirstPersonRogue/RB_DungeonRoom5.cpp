@@ -2,4 +2,16 @@
 
 
 #include "RB_DungeonRoom5.h"
+#include "Components/ArrowComponent.h" 
+#include "Components/StaticMeshComponent.h"
 
+ARB_DungeonRoom5::ARB_DungeonRoom5()
+{
+	Exit_Arrow_1 = CreateDefaultSubobject<UArrowComponent>(TEXT("Exit_Arrow_1"));
+	ClosingWall_1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ClosingWall_1"));
+	ClosingWall_2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ClosingWall_2"));
+
+	Exit_Arrow_1->SetupAttachment(ExitPointsFolder);
+	ClosingWall_1->SetupAttachment(GeometryFolder);
+	ClosingWall_2->SetupAttachment(GeometryFolder);
+}

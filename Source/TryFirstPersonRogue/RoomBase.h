@@ -31,6 +31,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USceneComponent* OverlapFolder;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USceneComponent* ExitPointsFolder;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* Cube_1;
 

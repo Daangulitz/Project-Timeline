@@ -13,5 +13,18 @@ UCLASS()
 class TRYFIRSTPERSONROGUE_API ARB_DugneonRoom1 : public ARoomBase
 {
 	GENERATED_BODY()
+
+public:
+
+	ARB_DugneonRoom1();
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UArrowComponent* Exit_Arrow_1;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UArrowComponent* Exit_Arrow_2;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UArrowComponent* Exit_Arrow_3;
 	
 };
