@@ -19,7 +19,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-protected:
+public:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -38,7 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* Cube_1;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(EditAnywhere, Category = "Components")
 	UStaticMeshComponent* Cube_2;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
