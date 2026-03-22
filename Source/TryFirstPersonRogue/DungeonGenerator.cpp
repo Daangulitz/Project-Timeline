@@ -95,7 +95,7 @@ void ADungeonGenerator::CloseUnusedExits()
 	{
 		AClosingWall* LatestClosingWallSpawned = GetWorld()->SpawnActor<AClosingWall>(ClosingWall);
 
-		FVector RelativeOffset(-875.0f, 0.0f, 0.0f);
+		FVector RelativeOffset(-935.0f, 0.0f, 180.0f);
 		FVector WorldOffset = Element->GetComponentRotation().RotateVector(RelativeOffset);
 
 		LatestClosingWallSpawned->SetActorLocation(Element->GetComponentLocation() + WorldOffset);
