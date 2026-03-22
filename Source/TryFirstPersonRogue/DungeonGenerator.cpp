@@ -4,6 +4,7 @@
 #include "DungeonGenerator.h"
 #include "RB_DugneonRoom1.h"
 #include "RoomBase.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -35,12 +36,40 @@ void ADungeonGenerator::SpawnStarterRoom()
 
 void ADungeonGenerator::SpawnNextRoom()
 {
-	ARoomBase* LastestSpawnedRoom = this->GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[rand() % RoomsToBeSpawned.Num()]);
+	LastestSpawnedRoom = this->GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[rand() % RoomsToBeSpawned.Num()]);
 
 	USceneComponent* SelectedExit = Exits[rand() % Exits.Num()];
 
 	LastestSpawnedRoom->SetActorLocation(SelectedExit->GetComponentLocation());
 	LastestSpawnedRoom->SetActorRotation(SelectedExit->GetComponentRotation());
+
+	Exits.Remove(SelectedExit);
+	TArray<USceneComponent*> LatestRoomExit;
+	LastestSpawnedRoom->ExitPointsFolder->GetChildrenComponents(false, LatestRoomExit);
+	Exits.Append(LatestRoomExit);
+
+	RoomAmount = RoomAmount - 1;
+
+	if (RoomAmount > 0)
+	{
+		SpawnNextRoom();
+		RemoveOverLappingRooms
+	}
+}
+
+void ADungeonGenerator::RemoveOverLappingRooms()
+{
+	TArray<USceneComponent*> OverlappedRooms;
+	LastestSpawnedRoom->OverlapFolder->GetChildrenComponents(false, OverlappedRooms);
+
+	TArray<UPrimitiveComponent*> OverlappingComponents;
+	for (USceneComponent* Element : OverlappedRooms) {
+		Cast<UBoxComponent>(Element)->GetOverlappingComponents(OverlappingComponents);
+	}
+
+	for (UPrimitiveComponent* Element : OverlappingComponents) {
+		LastestSpawnedRoom->Destroy();
+	}
 }
 
 

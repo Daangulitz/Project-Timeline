@@ -30,9 +30,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 	TArray<TSubclassOf<ARoomBase>> RoomsToBeSpawned;
 
+	UPROPERTY(EditAnywhere, Category = "Rooms")
+	int32 RoomAmount;
+
+	ARoomBase* LastestSpawnedRoom;
+	 
 	TArray<USceneComponent*> Exits;
 
 	void SpawnStarterRoom();
 
 	void SpawnNextRoom();
+
+	void RemoveOverLappingRooms();
 };
