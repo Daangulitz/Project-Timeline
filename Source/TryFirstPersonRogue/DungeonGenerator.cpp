@@ -5,6 +5,7 @@
 #include "RB_DugneonRoom1.h"
 #include "RoomBase.h"
 #include "Components/BoxComponent.h"
+#include "ClosingWall.h"
 
 
 // Sets default values
@@ -20,9 +21,15 @@ void ADungeonGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FTimerHandle UnusedHandle;
+
 	SpawnStarterRoom();
 	
 	SpawnNextRoom();
+	
+	RemoveOverLappingRooms();
+
+	GetWorld()->GetTimerManager().SetTimer(UnusedHandle, this, &ADungeonGenerator::CloseUnusedExits, 0.1f, false);
 }
 
 void ADungeonGenerator::SpawnStarterRoom()
@@ -36,6 +43,8 @@ void ADungeonGenerator::SpawnStarterRoom()
 
 void ADungeonGenerator::SpawnNextRoom()
 {
+	bCanSpawn = true;
+	
 	LastestSpawnedRoom = this->GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[rand() % RoomsToBeSpawned.Num()]);
 
 	USceneComponent* SelectedExit = Exits[rand() % Exits.Num()];
@@ -43,17 +52,23 @@ void ADungeonGenerator::SpawnNextRoom()
 	LastestSpawnedRoom->SetActorLocation(SelectedExit->GetComponentLocation());
 	LastestSpawnedRoom->SetActorRotation(SelectedExit->GetComponentRotation());
 
-	Exits.Remove(SelectedExit);
-	TArray<USceneComponent*> LatestRoomExit;
-	LastestSpawnedRoom->ExitPointsFolder->GetChildrenComponents(false, LatestRoomExit);
-	Exits.Append(LatestRoomExit);
+	RemoveOverLappingRooms();
+
+	if (bCanSpawn) 
+	{
+		Exits.Remove(SelectedExit);
+		TArray<USceneComponent*> LatestRoomExit;
+		LastestSpawnedRoom->ExitPointsFolder->GetChildrenComponents(false, LatestRoomExit);
+		Exits.Append(LatestRoomExit);
+	}
 
 	RoomAmount = RoomAmount - 1;
+
 
 	if (RoomAmount > 0)
 	{
 		SpawnNextRoom();
-		RemoveOverLappingRooms
+		
 	}
 }
 
@@ -68,7 +83,23 @@ void ADungeonGenerator::RemoveOverLappingRooms()
 	}
 
 	for (UPrimitiveComponent* Element : OverlappingComponents) {
+		bCanSpawn = false;
+		RoomAmount = RoomAmount + 1;
 		LastestSpawnedRoom->Destroy();
+	}
+}
+
+void ADungeonGenerator::CloseUnusedExits()
+{
+	for (USceneComponent* Element : Exits)
+	{
+		AClosingWall* LatestClosingWallSpawned = GetWorld()->SpawnActor<AClosingWall>(ClosingWall);
+
+		FVector RelativeOffset(-875.0f, 0.0f, 0.0f);
+		FVector WorldOffset = Element->GetComponentRotation().RotateVector(RelativeOffset);
+
+		LatestClosingWallSpawned->SetActorLocation(Element->GetComponentLocation() + WorldOffset);
+		LatestClosingWallSpawned->SetActorRotation(Element->GetComponentRotation() + FRotator(0.0f,90.0f,0.0f));
 	}
 }
 

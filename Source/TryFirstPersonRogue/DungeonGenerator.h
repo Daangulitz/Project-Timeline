@@ -8,6 +8,7 @@
 
 class ARB_DugneonRoom1;
 class ARoomBase;
+class AClosingWall;
 
 UCLASS()
 class TRYFIRSTPERSONROGUE_API ADungeonGenerator : public AActor
@@ -30,10 +31,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 	TArray<TSubclassOf<ARoomBase>> RoomsToBeSpawned;
 
-	UPROPERTY(EditAnywhere, Category = "Rooms")
+	UPROPERTY(EditAnywhere, Category = "Unused Exits Closing Wall")
+	TSubclassOf<AClosingWall> ClosingWall;
+	
+	UPROPERTY(EditAnywhere, Category = "Dungeon Info")
 	int32 RoomAmount;
 
 	ARoomBase* LastestSpawnedRoom;
+
+	bool bCanSpawn;
 	 
 	TArray<USceneComponent*> Exits;
 
@@ -42,4 +48,6 @@ public:
 	void SpawnNextRoom();
 
 	void RemoveOverLappingRooms();
+
+	void CloseUnusedExits();
 };
