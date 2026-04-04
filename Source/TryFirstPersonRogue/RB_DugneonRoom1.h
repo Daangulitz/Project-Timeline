@@ -20,11 +20,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UArrowComponent* Exit_Arrow_1;
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UArrowComponent* Exit_Arrow_2;
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UArrowComponent* Exit_Arrow_3;
 	
 };
