@@ -56,6 +56,14 @@ void ADungeonGenerator::SpawnNextRoom()
 
 	if (bCanSpawn) 
 	{
+		if (Door) {
+			AActor* LatestDoorSpawned = GetWorld()->SpawnActor<AActor>(Door);
+			FVector RelativeOffset(-1000.0f, -120.0f, 0.0f);
+			FVector WorldOffset = SelectedExit->GetComponentRotation().RotateVector(RelativeOffset);
+			LatestDoorSpawned->SetActorLocation(SelectedExit->GetComponentLocation() + WorldOffset);
+			LatestDoorSpawned->SetActorRotation(SelectedExit->GetComponentRotation() + FRotator(0.0f, 0.0f, 0.0f));
+		}
+
 		Exits.Remove(SelectedExit);
 		TArray<USceneComponent*> LatestRoomExit;
 		LastestSpawnedRoom->ExitPointsFolder->GetChildrenComponents(false, LatestRoomExit);
@@ -95,7 +103,7 @@ void ADungeonGenerator::CloseUnusedExits()
 	{
 		AClosingWall* LatestClosingWallSpawned = GetWorld()->SpawnActor<AClosingWall>(ClosingWall);
 
-		FVector RelativeOffset(-935.0f, 0.0f, 180.0f);
+		FVector RelativeOffset(-1030.0f, -190.0f, 0.0f);
 		FVector WorldOffset = Element->GetComponentRotation().RotateVector(RelativeOffset);
 
 		LatestClosingWallSpawned->SetActorLocation(Element->GetComponentLocation() + WorldOffset);

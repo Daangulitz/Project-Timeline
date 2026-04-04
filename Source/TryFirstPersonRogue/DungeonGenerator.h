@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Unused Exits Closing Wall")
 	TSubclassOf<AClosingWall> ClosingWall;
+
+	UPROPERTY(EditAnywhere, Category = "Used Exits Doors")
+	TSubclassOf<AActor> Door;
 	
 	UPROPERTY(EditAnywhere, Category = "Dungeon Info")
 	int32 RoomAmount;
