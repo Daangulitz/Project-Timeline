@@ -22,6 +22,7 @@ void ADungeonGenerator::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle UnusedHandle;
+	RoomsSpawnedCount = 0;
 
 	SpawnStarterRoom();
 	
@@ -29,7 +30,7 @@ void ADungeonGenerator::BeginPlay()
 	
 	RemoveOverLappingRooms();
 
-	GetWorld()->GetTimerManager().SetTimer(UnusedHandle, this, &ADungeonGenerator::CloseUnusedExits, 0.1f, false);
+	GetWorld()->GetTimerManager().SetTimer(UnusedHandle, this, &ADungeonGenerator::CloseUnusedExits, 0.1f, true);
 }
 
 void ADungeonGenerator::SpawnStarterRoom()
@@ -40,44 +41,69 @@ void ADungeonGenerator::SpawnStarterRoom()
 
 	SpawnedStarterRoom->ExitPointsFolder->GetChildrenComponents(false, Exits);
 }
-
 void ADungeonGenerator::SpawnNextRoom()
 {
-	bCanSpawn = true;
-	
-	LastestSpawnedRoom = this->GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[rand() % RoomsToBeSpawned.Num()]);
+    // 1. Setup a Safety Check to prevent infinite loops
+    int32 MaxAttempts = 1000;
+    int32 CurrentAttempt = 0;
 
-	USceneComponent* SelectedExit = Exits[rand() % Exits.Num()];
+    // 2. Loop until we have spawned the desired amount of rooms
+    // We check RoomAmount > 0 because your original code decrements it
+    while (RoomAmount > 0 && CurrentAttempt < MaxAttempts)
+    {
+        CurrentAttempt++;
 
-	LastestSpawnedRoom->SetActorLocation(SelectedExit->GetComponentLocation());
-	LastestSpawnedRoom->SetActorRotation(SelectedExit->GetComponentRotation());
+        // Safety: If we run out of exits, we can't spawn anymore
+        if (Exits.Num() == 0) break;
 
-	RemoveOverLappingRooms();
+        bCanSpawn = true;
 
-	if (bCanSpawn) 
-	{
-		if (Door) {
-			AActor* LatestDoorSpawned = GetWorld()->SpawnActor<AActor>(Door);
-			FVector RelativeOffset(-1000.0f, -120.0f, 0.0f);
-			FVector WorldOffset = SelectedExit->GetComponentRotation().RotateVector(RelativeOffset);
-			LatestDoorSpawned->SetActorLocation(SelectedExit->GetComponentLocation() + WorldOffset);
-			LatestDoorSpawned->SetActorRotation(SelectedExit->GetComponentRotation() + FRotator(0.0f, 0.0f, 0.0f));
-		}
+        // Pick random room and exit
+        int32 RoomIndex = rand() % RoomsToBeSpawned.Num();
+        int32 ExitIndex = rand() % Exits.Num();
 
-		Exits.Remove(SelectedExit);
-		TArray<USceneComponent*> LatestRoomExit;
-		LastestSpawnedRoom->ExitPointsFolder->GetChildrenComponents(false, LatestRoomExit);
-		Exits.Append(LatestRoomExit);
-	}
+        ARoomBase* NewRoom = GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[RoomIndex]);
+        USceneComponent* SelectedExit = Exits[ExitIndex];
 
-	RoomAmount = RoomAmount - 1;
+        if (!NewRoom) continue;
 
+        NewRoom->SetActorLocation(SelectedExit->GetComponentLocation());
+        NewRoom->SetActorRotation(SelectedExit->GetComponentRotation());
 
-	if (RoomAmount > 0)
-	{
-		SpawnNextRoom();
-		
-	}
+        // Update your global pointer for the overlap check
+        LastestSpawnedRoom = NewRoom;
+
+        // 3. Check for overlaps
+        // IMPORTANT: Ensure RemoveOverLappingRooms() DOES NOT call SpawnNextRoom() 
+        // and DOES NOT increment RoomAmount anymore.
+        RemoveOverLappingRooms();
+
+        if (bCanSpawn)
+        {
+            // Spawn Door logic
+            if (Door) {
+                AActor* LatestDoorSpawned = GetWorld()->SpawnActor<AActor>(Door);
+                FVector RelativeOffset(-1000.0f, -120.0f, 0.0f);
+                FVector WorldOffset = SelectedExit->GetComponentRotation().RotateVector(RelativeOffset);
+                LatestDoorSpawned->SetActorLocation(SelectedExit->GetComponentLocation() + WorldOffset);
+                LatestDoorSpawned->SetActorRotation(SelectedExit->GetComponentRotation());
+            }
+
+            // Successfully spawned: Update the list of available exits
+            Exits.RemoveAt(ExitIndex);
+            TArray<USceneComponent*> NewExits;
+            NewRoom->ExitPointsFolder->GetChildrenComponents(false, NewExits);
+            Exits.Append(NewExits);
+
+            // ONLY decrement when a room is actually placed successfully
+            RoomAmount--;
+        }
+        // If bCanSpawn is false, the loop just repeats and tries again 
+        // with a different random room/exit combo.
+    }
+
+    // 4. Once the loop finishes, clean up
+    CloseUnusedExits();
 }
 
 void ADungeonGenerator::RemoveOverLappingRooms()

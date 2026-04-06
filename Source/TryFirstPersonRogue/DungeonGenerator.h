@@ -43,6 +43,8 @@ public:
 	ARoomBase* LastestSpawnedRoom;
 
 	bool bCanSpawn;
+	int32 RoomsSpawnedCount = 0;
+	FTimerHandle GenerationTimerHandle;
 	 
 	TArray<USceneComponent*> Exits;
 
