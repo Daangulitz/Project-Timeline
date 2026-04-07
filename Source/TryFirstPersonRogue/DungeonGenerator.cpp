@@ -13,7 +13,6 @@ ADungeonGenerator::ADungeonGenerator()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +30,8 @@ void ADungeonGenerator::BeginPlay()
 	RemoveOverLappingRooms();
 
 	GetWorld()->GetTimerManager().SetTimer(UnusedHandle, this, &ADungeonGenerator::CloseUnusedExits, 0.1f, true);
+
+	CloseUnusedExits();
 }
 
 void ADungeonGenerator::SpawnStarterRoom()
@@ -43,17 +44,18 @@ void ADungeonGenerator::SpawnStarterRoom()
 }
 void ADungeonGenerator::SpawnNextRoom()
 {
-    // 1. Setup a Safety Check to prevent infinite loops
+    // Use a local variable to track how many we NEED to spawn
+    // This prevents the "Ignoring RoomAmount" issue
+    int32 TargetCount = RoomAmount;
+    int32 SuccessfullySpawned = 0;
+    int32 SafetyBreak = 0;
     int32 MaxAttempts = 1000;
-    int32 CurrentAttempt = 0;
 
-    // 2. Loop until we have spawned the desired amount of rooms
-    // We check RoomAmount > 0 because your original code decrements it
-    while (RoomAmount > 0 && CurrentAttempt < MaxAttempts)
+    // Remove the recursive call and use this single loop
+    while (SuccessfullySpawned < TargetCount && SafetyBreak < MaxAttempts)
     {
-        CurrentAttempt++;
+        SafetyBreak++;
 
-        // Safety: If we run out of exits, we can't spawn anymore
         if (Exits.Num() == 0) break;
 
         bCanSpawn = true;
@@ -65,45 +67,41 @@ void ADungeonGenerator::SpawnNextRoom()
         ARoomBase* NewRoom = GetWorld()->SpawnActor<ARoomBase>(RoomsToBeSpawned[RoomIndex]);
         USceneComponent* SelectedExit = Exits[ExitIndex];
 
-        if (!NewRoom) continue;
-
-        NewRoom->SetActorLocation(SelectedExit->GetComponentLocation());
-        NewRoom->SetActorRotation(SelectedExit->GetComponentRotation());
-
-        // Update your global pointer for the overlap check
-        LastestSpawnedRoom = NewRoom;
-
-        // 3. Check for overlaps
-        // IMPORTANT: Ensure RemoveOverLappingRooms() DOES NOT call SpawnNextRoom() 
-        // and DOES NOT increment RoomAmount anymore.
-        RemoveOverLappingRooms();
-
-        if (bCanSpawn)
+        if (NewRoom && SelectedExit)
         {
-            // Spawn Door logic
-            if (Door) {
-                AActor* LatestDoorSpawned = GetWorld()->SpawnActor<AActor>(Door);
-                FVector RelativeOffset(-1000.0f, -120.0f, 0.0f);
-                FVector WorldOffset = SelectedExit->GetComponentRotation().RotateVector(RelativeOffset);
-                LatestDoorSpawned->SetActorLocation(SelectedExit->GetComponentLocation() + WorldOffset);
-                LatestDoorSpawned->SetActorRotation(SelectedExit->GetComponentRotation());
+            NewRoom->SetActorLocation(SelectedExit->GetComponentLocation());
+            NewRoom->SetActorRotation(SelectedExit->GetComponentRotation());
+
+            LastestSpawnedRoom = NewRoom;
+
+            // This destroys the room if it overlaps
+            RemoveOverLappingRooms();
+
+            if (bCanSpawn)
+            {
+                // SUCCESS
+                if (Door) {
+                    AActor* LatestDoorSpawned = GetWorld()->SpawnActor<AActor>(Door);
+                    FVector RelativeOffset(-1000.0f, -120.0f, 0.0f);
+                    FVector WorldOffset = SelectedExit->GetComponentRotation().RotateVector(RelativeOffset);
+                    LatestDoorSpawned->SetActorLocation(SelectedExit->GetComponentLocation() + WorldOffset);
+                    LatestDoorSpawned->SetActorRotation(SelectedExit->GetComponentRotation());
+                }
+
+                // Update the Exits list
+                Exits.RemoveAt(ExitIndex);
+                TArray<USceneComponent*> NewExits;
+                NewRoom->ExitPointsFolder->GetChildrenComponents(false, NewExits);
+                Exits.Append(NewExits);
+
+                SuccessfullySpawned++;
             }
-
-            // Successfully spawned: Update the list of available exits
-            Exits.RemoveAt(ExitIndex);
-            TArray<USceneComponent*> NewExits;
-            NewRoom->ExitPointsFolder->GetChildrenComponents(false, NewExits);
-            Exits.Append(NewExits);
-
-            // ONLY decrement when a room is actually placed successfully
-            RoomAmount--;
         }
-        // If bCanSpawn is false, the loop just repeats and tries again 
-        // with a different random room/exit combo.
     }
 
-    // 4. Once the loop finishes, clean up
-    CloseUnusedExits();
+    // IMPORTANT: Only call this ONCE, after the loop is totally finished.
+    // This prevents the "extra walls" issue.
+    // CloseUnusedExits(); 
 }
 
 void ADungeonGenerator::RemoveOverLappingRooms()
@@ -125,16 +123,29 @@ void ADungeonGenerator::RemoveOverLappingRooms()
 
 void ADungeonGenerator::CloseUnusedExits()
 {
-	for (USceneComponent* Element : Exits)
-	{
-		AClosingWall* LatestClosingWallSpawned = GetWorld()->SpawnActor<AClosingWall>(ClosingWall);
+    // A TSet automatically handles duplicates. 
+    // This ensures we never spawn two walls on the same spot.
+    TSet<USceneComponent*> UniqueExits(Exits);
 
-		FVector RelativeOffset(-1030.0f, -190.0f, 0.0f);
-		FVector WorldOffset = Element->GetComponentRotation().RotateVector(RelativeOffset);
+    for (USceneComponent* Element : UniqueExits)
+    {
+        if (!Element) continue;
 
-		LatestClosingWallSpawned->SetActorLocation(Element->GetComponentLocation() + WorldOffset);
-		LatestClosingWallSpawned->SetActorRotation(Element->GetComponentRotation() + FRotator(0.0f,90.0f,0.0f));
-	}
+        AClosingWall* LatestClosingWallSpawned = GetWorld()->SpawnActor<AClosingWall>(ClosingWall);
+        if (LatestClosingWallSpawned)
+        {
+            FVector RelativeOffset(-1030.0f, -190.0f, 0.0f);
+            FVector WorldOffset = Element->GetComponentRotation().RotateVector(RelativeOffset);
+
+            LatestClosingWallSpawned->SetActorLocation(Element->GetComponentLocation() + WorldOffset);
+
+            // Fixed rotation to match the exit
+            LatestClosingWallSpawned->SetActorRotation(Element->GetComponentRotation() + FRotator(0.0f, 90.0f, 0.0f));
+        }
+    }
+
+    // Clear the list so if this is called again, it doesn't double-up
+    Exits.Empty();
 }
 
 
