@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dungeon Info")
 	int32 RoomAmount;
 
+	UFUNCTION()
+	void OnNavMeshGenerationFinished(ANavigationData* NavData);
+
 	ARoomBase* LastestSpawnedRoom;
 
 	bool bCanSpawn;

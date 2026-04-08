@@ -6,6 +6,9 @@
 #include "RoomBase.h"
 #include "Components/BoxComponent.h"
 #include "ClosingWall.h"
+#include "NavigationSystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 
 
 // Sets default values
@@ -32,6 +35,17 @@ void ADungeonGenerator::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(UnusedHandle, this, &ADungeonGenerator::CloseUnusedExits, 0.1f, true);
 
 	CloseUnusedExits();
+
+    AActor* FoundVolume = UGameplayStatics::GetActorOfClass(GetWorld(), ANavMeshBoundsVolume::StaticClass());
+    ANavMeshBoundsVolume* NavVolume = Cast<ANavMeshBoundsVolume>(FoundVolume);
+
+    UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+    if (NavSys && NavVolume)
+    {
+        // Now the types match!
+        NavSys->OnNavigationBoundsUpdated(NavVolume);
+        NavSys->Build();
+    }
 }
 
 void ADungeonGenerator::SpawnStarterRoom()
